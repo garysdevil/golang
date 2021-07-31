@@ -1,5 +1,7 @@
+package first
+
 // 冒泡排序
-func bubbleSort(slice []int) {
+func BubbleSort(slice []int) {
 	length := len(slice)
 	flag := true
 	for i := 0; i < length-1; i++ {
@@ -10,7 +12,7 @@ func bubbleSort(slice []int) {
 			}
 		}
 		if flag {
-			return 
+			return
 		}
 	}
 }

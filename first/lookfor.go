@@ -1,5 +1,7 @@
+package first
+
 // 二分查找
-func dichotomy(slice []int, value int) int {
+func Dichotomy(slice []int, value int) int {
 	start, end, mid := 0, len(slice)-1, 0
 	for {
 		mid = (start + end) / 2
