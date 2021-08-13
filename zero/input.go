@@ -12,8 +12,9 @@ func ScanFunc1() {
 		name string
 		age  int
 	)
+	fmt.Println("请输入名字和年龄，例如 gary 20")
 	fmt.Scan(&name, &age)
-	fmt.Println(name, age)
+	fmt.Println("名字:", name, "年龄:", age)
 }
 
 // 输入n行，然后输入n行数字

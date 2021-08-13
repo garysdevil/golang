@@ -8,4 +8,4 @@
 gofmt -l -w ./
 git add -A
 git commit -m "date +%Y-%M-%d"
-git push
+git push origin main
