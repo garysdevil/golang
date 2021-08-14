@@ -2,17 +2,18 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"math/rand"
-	"time"
-	// "main/zero"
+	"regexp"
 )
 
 func main() {
-	fmt.Println("--")
-	// zero.ScanFunc1()
-	fmt.Printf("%+v\n", 1)
-	log.SetPrefix("main: ")
-	// log.SetFlags(0)
-	rand.Seed(time.Now().UnixNano())
+	name := "Gladys"
+	want := regexp.MustCompile(`\b` + name + `\b`)
+	// want := regexp.MustCompile(name)
+
+	var err []string
+	msg := "Glads" // errors.New("hhhhh")
+	if !want.MatchString(msg) || err != nil {
+		fmt.Printf(`Hello("Gladys") = %q, %v, want match for %#q, nil`, msg, err, want)
+	}
+	
 }
