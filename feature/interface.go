@@ -1,3 +1,4 @@
+// 模拟java的多态机制
 package feature
 
 import "fmt"
