@@ -1,4 +1,4 @@
-// 模块化、初始化时进行缓存、输入安全验证、
+// 模块化、初始化时进行缓存、输入安全验证、通过匿名函数和闭包进行代码简化
 // 参考 https://golang.org/doc/articles/wiki/
 package web
 
@@ -55,7 +55,7 @@ func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 }
 
 // 文件名（标题）验证
-var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
+var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$") // 正则表达，分组查询
 
 func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
 	m := validPath.FindStringSubmatch(r.URL.Path)
@@ -63,15 +63,18 @@ func getTitle(w http.ResponseWriter, r *http.Request) (string, error) {
 		http.NotFound(w, r)
 		return "", errors.New("invalid Page Title")
 	}
+	fmt.Println(m[0], m[1], m[2])
 	return m[2], nil // The title is the second subexpression.
 }
 
-func viewHandler(w http.ResponseWriter, r *http.Request) {
+func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
+	// 方式一
 	// title := r.URL.Path[len("/view/"):]
-	title, err := getTitle(w, r)
-	if err != nil {
-		return
-	}
+	// 方式二
+	// title, err := getTitle(w, r)
+	// if err != nil {
+	// 	return
+	// }
 
 	p, err := loadPage(title)
 	if err != nil {
@@ -87,12 +90,14 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "view", p)
 }
 
-func editHandler(w http.ResponseWriter, r *http.Request) {
+func editHandler(w http.ResponseWriter, r *http.Request, title string) {
+	// 方式一
 	// title := r.URL.Path[len("/edit/"):]
-	title, err := getTitle(w, r)
-	if err != nil {
-		return
-	}
+	// 方式二
+	// title, err := getTitle(w, r)
+	// if err != nil {
+	// 	return
+	// }
 
 	p, err := loadPage(title)
 	if err != nil {
@@ -113,21 +118,35 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "edit", p)
 }
 
-func saveHandler(w http.ResponseWriter, r *http.Request) {
+func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
+	// 方式一
 	// title := r.URL.Path[len("/save/"):]
-	title, err := getTitle(w, r)
-	if err != nil {
-		return
-	}
+	// 方式二
+	// title, err := getTitle(w, r)
+	// if err != nil {
+	// 	return
+	// }
 
 	body := r.FormValue("body")
 	p := &Page{Title: title, Body: []byte(body)}
-	err = p.save()
+	err := p.save()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
+}
+
+// 通过匿名函数和闭包来封装控制器 // 难点
+func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		m := validPath.FindStringSubmatch(r.URL.Path)
+		if m == nil {
+			http.NotFound(w, r)
+			return
+		}
+		fn(w, r, m[2])
+	}
 }
 
 func AppWrite() {
@@ -138,9 +157,8 @@ func AppWrite() {
 }
 
 func AppRun() {
-	http.HandleFunc("/view/", viewHandler)
-	http.HandleFunc("/edit/", editHandler)
-	http.HandleFunc("/save/", saveHandler)
-	// http.HandleFunc("/save/", saveHandler)
+    http.HandleFunc("/view/", makeHandler(viewHandler))
+    http.HandleFunc("/edit/", makeHandler(editHandler))
+    http.HandleFunc("/save/", makeHandler(saveHandler))
 	log.Fatal(http.ListenAndServe("127.0.0.1:8080", nil))
 }
