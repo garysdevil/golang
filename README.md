@@ -1,6 +1,6 @@
 # Golang
 - 时间：创建于2021年7月31日。
-- 功能：记录关于Golang的小片段代码。
+- 功能：用于学习与练习Golang；记录关于Golang的小片段代码。
 - 消遣：偶尔刷点算法题目，也是一种快乐的消遣。
 - my golang version：go version go1.16 darwin/amd64
 

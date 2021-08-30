@@ -1,6 +1,6 @@
 package main
 
-import "github.com/garysdevil/golang/web"
+import "github.com/garysdevil/mygolang/web"
 
 func main() {
 
